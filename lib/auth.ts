@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         if (!user) return null;
         const valid = await bcrypt.compare(credentials.password, user.passwordHash);
         if (!valid) return null;
-        return { id: user.id, email: user.email, name: user.email, role: user.role };
+        return { id: user.id, email: user.email, name: user.email, role: user.role as "CUSTOMER" | "OWNER" };
       },
     }),
   ],
