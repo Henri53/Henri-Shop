@@ -1,0 +1,73 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// SQLite has no native enum type, so role/status are plain strings:
+// User.role: "CUSTOMER" | "OWNER" (OWNER is never actually stored — see lib/auth.ts)
+// Topup.status: "PENDING" | "APPROVED" | "REJECTED"
+// Order.status: "PAID" | "DELIVERED" | "CANCELLED"
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("CUSTOMER")
+  balanceCents Int      @default(0)
+  createdAt    DateTime @default(now())
+  orders       Order[]
+  topups       Topup[]
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  description     String
+  longDescription String
+  priceCents      Int
+  stock           Int      @default(0)
+  origin          String
+  deliveryTime    String
+  warrantyTime    String
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  orders          Order[]
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id])
+  qty        Int
+  totalCents Int
+  status     String   @default("PAID")
+  createdAt  DateTime @default(now())
+}
+
+model Topup {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  amountCents Int
+  method      String // "PayPal" | "BTC" | "LTC" | "SOL"
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  // Crypto auto-detection: a frozen, slightly-randomised target amount
+  // and the address it must arrive at, checked by the cron job.
+  coin          String?
+  cryptoAmount  String?
+  address       String?
+  txId          String?  @unique
+  expiresAt     DateTime?
+
+  // PayPal auto-capture
+  paypalOrderId String?  @unique
+}
