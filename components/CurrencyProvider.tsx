@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 type Rates = {
   fiat: { EUR: number; USD: number; GBP: number };
+  fiatLive?: boolean;
   updatedAt: string;
 };
 
@@ -14,6 +15,7 @@ type Ctx = {
 };
 
 const SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£" };
+const REFRESH_MS = 5 * 60_000; // keep long-open tabs up to date
 
 const CurrencyContext = createContext<Ctx>({
   currency: "EUR",
@@ -30,10 +32,16 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem("vaultline-currency");
       if (saved === "EUR" || saved === "USD" || saved === "GBP") setCurrency(saved);
     } catch {}
-    fetch("/api/rates")
-      .then((r) => r.json())
-      .then(setRates)
-      .catch(() => {});
+
+    function loadRates() {
+      fetch("/api/rates")
+        .then((r) => r.json())
+        .then(setRates)
+        .catch(() => {}); // keep the previous rates if this refresh fails
+    }
+    loadRates();
+    const timer = setInterval(loadRates, REFRESH_MS);
+    return () => clearInterval(timer);
   }, []);
 
   function changeCurrency(c: "EUR" | "USD" | "GBP") {
@@ -44,9 +52,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   }
 
   function format(eurCents: number) {
-    const rate = rates?.fiat[currency] ?? 1;
-    const symbol = SYMBOLS[currency];
-    return `${symbol}${((eurCents / 100) * rate).toFixed(2)}`;
+    const eur = eurCents / 100;
+    // Without trustworthy rates, show the real EUR price instead of a euro
+    // number wearing a dollar sign.
+    const rate = rates?.fiatLive === false ? undefined : rates?.fiat[currency];
+    if (currency === "EUR" || !rate) return `€${eur.toFixed(2)}`;
+    // "≈": prices are converted for display only, payments are always charged in EUR.
+    return `≈${SYMBOLS[currency]}${(eur * rate).toFixed(2)}`;
   }
 
   return (

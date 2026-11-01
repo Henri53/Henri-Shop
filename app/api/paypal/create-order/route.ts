@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
 
   const { amountEur } = await req.json();
   const amount = Number(amountEur);
-  if (!amount || amount <= 0) {
-    return NextResponse.json({ error: "Enter a valid amount." }, { status: 400 });
+  if (!Number.isFinite(amount) || amount < 1) {
+    return NextResponse.json({ error: "Minimum top-up is €1.00." }, { status: 400 });
   }
 
   try {

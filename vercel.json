@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/cron/check-topups?secret=REPLACE_WITH_YOUR_CRON_SECRET",
+      "path": "/api/cron/check-topups",
       "schedule": "0 0 * * *"
     }
   ]

@@ -9,7 +9,10 @@ A real Next.js app:
 - **Owner dashboard** at `/owner` — add/edit/delete products with Name, Category, Price,
   Stock, Origin, Delivery time, Warranty time, descriptions.
 - **Live exchange rates** — EUR/USD/GBP from the European Central Bank (via
-  frankfurter.app) and BTC/LTC/SOL prices from CoinGecko, both free, no API key.
+  frankfurter.dev) and BTC/LTC/SOL prices from CoinGecko, both free, no API key.
+  Converted prices are display-only ("≈"); payments are always charged in EUR. If the
+  rate API is down, prices fall back to plain EUR, and crypto top-ups are refused
+  rather than quoted from outdated prices.
 - **Real PayPal payments** — via PayPal's own Orders API. A top-up is confirmed the
   moment PayPal confirms it; nothing to click on your end.
 - **Automatic crypto detection** — a background job checks public blockchain explorers
@@ -75,22 +78,27 @@ is always there).
 
 ### Triggering the background check
 
-The check lives at `GET /api/cron/check-topups?secret=YOUR_CRON_SECRET`. Something
-needs to call it every few minutes. Two ways:
+The check lives at `GET /api/cron/check-topups`. Something needs to call it every few
+minutes — **crypto top-ups expire after 1 hour, so a daily check is not enough.**
 
-**A) Vercel Cron** (simplest if your Vercel plan supports the frequency you want —
-check your current plan's limits in the Vercel dashboard under Settings → Cron Jobs):
-`vercel.json` already defines a 5-minute schedule. Just replace
-`REPLACE_WITH_YOUR_CRON_SECRET` in `vercel.json` with your real `CRON_SECRET` value
-before deploying.
+**Vercel Hobby (free) only allows cron jobs once per day**, and a more frequent
+schedule makes the whole deployment fail. So use an external cron service for the
+every-few-minutes check:
 
-**B) A free external cron service** (works regardless of your Vercel plan): sign up at
-[cron-job.org](https://cron-job.org) (free) and create a job that does a GET request to
-`https://your-domain.com/api/cron/check-topups?secret=YOUR_CRON_SECRET` every 2–5
-minutes.
+1. Sign up at [cron-job.org](https://cron-job.org) (free).
+2. Create a job: URL `https://your-domain.com/api/cron/check-topups`, schedule every
+   2–5 minutes.
+3. In the job's advanced settings add the header `Authorization` with the value
+   `Bearer YOUR_CRON_SECRET` (the same value as `CRON_SECRET` in your Vercel
+   Environment Variables). Prefer the header over `?secret=...` in the URL, because
+   URLs end up in logs.
 
-Either way, if you change `CRON_SECRET`, update it in both `.env` (on Vercel, in the
-project's Environment Variables) and wherever you configured the cron call.
+`vercel.json` keeps one daily Vercel cron as a harmless backup (it cleans up expired
+top-ups). Vercel sends `CRON_SECRET` as a Bearer header on its own, so **never put the
+real secret into `vercel.json` or any other file in the repo.**
+
+If you are on a paid Vercel plan, you can instead change the `schedule` in
+`vercel.json` to `*/5 * * * *` and skip the external service.
 
 ### Upgrading later
 
@@ -131,8 +139,8 @@ automatically every time you push:
 5. Deploy. Then run `npx prisma db push` once from your own machine, pointed at the
    production database (`DATABASE_URL=<your Postgres URL> npx prisma db push`), to
    create its tables.
-6. Update `vercel.json`'s cron URL with your real `CRON_SECRET` (or use the
-   cron-job.org route from section 3) and redeploy.
+6. Set up the cron-job.org job from section 3 (do not put your secret into
+   `vercel.json`).
 
 From then on: push to GitHub → Vercel rebuilds and redeploys automatically, same
 simple workflow as uploading files, just with a real server behind it.

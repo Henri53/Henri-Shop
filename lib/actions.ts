@@ -108,10 +108,15 @@ export async function requestCryptoTopup(formData: FormData) {
   const session = await requireUser();
   const amountCents = Math.round(parseFloat(String(formData.get("amount") || "0")) * 100);
   const coin = String(formData.get("coin") || "") as keyof typeof WALLETS;
-  if (!amountCents || amountCents <= 0) throw new Error("Enter a valid amount.");
+  if (!Number.isFinite(amountCents) || amountCents < 100) throw new Error("Minimum top-up is €1.00.");
   if (!WALLETS[coin]) throw new Error("Unknown coin.");
 
   const rates = await getLiveRates();
+  // Never quote a payment amount from missing or outdated prices: the customer
+  // would be told to send the wrong amount of coins.
+  if (!rates.cryptoLive || !(rates.crypto[coin] > 0)) {
+    throw new Error("Live crypto prices are unavailable right now. Please try again in a minute.");
+  }
   const priceEur = rates.crypto[coin];
   const baseAmount = amountCents / 100 / priceEur;
 

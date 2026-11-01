@@ -9,8 +9,19 @@ import { findPayment } from "@/lib/chain";
 // explorers through your app.
 
 export async function GET(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get("secret") || req.headers.get("x-cron-secret");
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  // Accepted in this order of convenience:
+  //  - "Authorization: Bearer <secret>": what Vercel Cron sends on its own when
+  //    a CRON_SECRET env var exists, and what cron-job.org can send as a header
+  //  - "x-cron-secret: <secret>" header
+  //  - "?secret=<secret>" in the URL (works everywhere, but URLs end up in logs)
+  const expected = process.env.CRON_SECRET;
+  const bearer = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const provided = [
+    bearer,
+    req.headers.get("x-cron-secret"),
+    req.nextUrl.searchParams.get("secret"),
+  ];
+  if (!expected || !provided.includes(expected)) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
 
