@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -7,7 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// SQLite has no native enum type, so role/status are plain strings:
+// role/status are plain strings (no database enums), so they are easy to extend:
 // User.role: "CUSTOMER" | "OWNER" (OWNER is never actually stored — see lib/auth.ts)
 // Topup.status: "PENDING" | "APPROVED" | "REJECTED"
 // Order.status: "PAID" | "DELIVERED" | "CANCELLED"

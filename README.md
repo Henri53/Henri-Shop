@@ -118,27 +118,20 @@ automatically every time you push:
    double-check that before your first push).
 2. Go to [vercel.com](https://vercel.com), sign in with GitHub, **Add New → Project**,
    pick your repo. Vercel detects Next.js automatically.
-3. Before the first deploy, you need a real hosted database — SQLite only works
-   locally. The easiest free option: [Neon](https://neon.tech) or
-   [Supabase](https://supabase.com) (Postgres, free tier).
-   - Create a project there, copy its connection string.
-   - In `prisma/schema.prisma`, change:
-     ```prisma
-     datasource db {
-       provider = "postgresql"
-       url      = env("DATABASE_URL")
-     }
-     ```
-   - Commit that change.
+3. You need a hosted Postgres database (the app already uses Postgres, nothing to
+   change in the code). The easiest free option: [Neon](https://neon.tech) — sign in
+   with GitHub, create a project, and copy the connection string (in the copy dialog,
+   turn **Connection pooling OFF**). [Supabase](https://supabase.com) works too.
 4. In Vercel's project settings → **Environment Variables**, add every variable from
    your `.env` (with real/live values this time) — `DATABASE_URL` (your Postgres
    connection string), `NEXTAUTH_SECRET`, `NEXTAUTH_URL` (your real domain, e.g.
    `https://yourshop.vercel.app`), `OWNER_EMAIL`, `OWNER_PASSWORD`,
    `PAYPAL_ENV`/`PAYPAL_CLIENT_ID`/`PAYPAL_CLIENT_SECRET`/`NEXT_PUBLIC_PAYPAL_CLIENT_ID`,
    `CRON_SECRET`.
-5. Deploy. Then run `npx prisma db push` once from your own machine, pointed at the
-   production database (`DATABASE_URL=<your Postgres URL> npx prisma db push`), to
-   create its tables.
+5. Deploy. The database tables are created automatically on every build
+   (`prisma db push` is part of `npm run build`); nothing to run by hand. If a build
+   fails right away with a database error, `DATABASE_URL` is missing or wrong in
+   Vercel's environment variables.
 6. Set up the cron-job.org job from section 3 (do not put your secret into
    `vercel.json`).
 
