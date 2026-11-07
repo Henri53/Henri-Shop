@@ -138,6 +138,19 @@ automatically every time you push:
 From then on: push to GitHub → Vercel rebuilds and redeploys automatically, same
 simple workflow as uploading files, just with a real server behind it.
 
+## Owner dashboard
+
+Log in with `OWNER_EMAIL` / `OWNER_PASSWORD` and open **Dashboard** in the top bar:
+
+- **Overview** - revenue (all time, last 7 days, per-day chart), customers, held customer balance, low-stock list, latest orders.
+- **Products** - add, edit, duplicate and delete. One-click *Visible/Hidden* and *Featured*, quick stock edit, image link, badge ("New", "Hot"), search. Products that already have orders are hidden instead of deleted, so order history stays intact.
+- **Orders** - paste what the customer receives (login details, key, link) and mark the order delivered; the customer sees it in their account. *Cancel and refund* returns the money and, if not yet delivered, the stock.
+- **Customers** - search by e-mail, add or remove balance.
+- **Top-ups** - waiting and past top-ups, with a manual fallback.
+- **Settings** - shop name, tagline, announcement banner, support link, and *Pause purchases*.
+
+The shop page has category sidebar, search, sort and an in-stock filter. Product images are plain links (paste an image URL); without one, the card gets a coloured tile.
+
 ## Notes
 
 - `origin`, `deliveryTime`, and `warrantyTime` on each product are free-text fields —

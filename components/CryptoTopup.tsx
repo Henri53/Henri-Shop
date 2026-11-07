@@ -65,7 +65,7 @@ export default function CryptoTopup({ onCredited }: { onCredited: () => void }) 
         <div className="flex items-center gap-2 text-sm">
           <span
             className={`w-2 h-2 rounded-full ${
-              status === "APPROVED" ? "bg-accent" : status === "REJECTED" ? "bg-red-400" : "bg-yellow-400"
+              status === "APPROVED" ? "bg-good" : status === "REJECTED" ? "bg-red-400" : "bg-yellow-400"
             }`}
           />
           {status === "PENDING" && "Waiting for payment — checked automatically every couple of minutes…"}

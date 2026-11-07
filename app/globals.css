@@ -2,11 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: dark;
+}
+
 html,
 body {
-  background-color: #0e1116;
+  background-color: #0e1218;
 }
 
 * {
-  border-color: #232a34;
+  border-color: #262f3b;
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid #f2b54a;
+  outline-offset: 2px;
+}
+
+/* Hide the default disclosure triangle, we draw our own */
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Thin scrollbars for the horizontal category row */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #262f3b transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

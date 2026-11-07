@@ -37,6 +37,12 @@ model Product {
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   orders          Order[]
+
+  // Added for the redesign. All optional or defaulted, so the live database
+  // keeps working and `prisma db push` never has to drop anything.
+  imageUrl String?
+  badge    String? // short label on the card, e.g. "New", "Hot"
+  featured Boolean @default(false)
 }
 
 model Order {
@@ -49,6 +55,16 @@ model Order {
   totalCents Int
   status     String   @default("PAID")
   createdAt  DateTime @default(now())
+
+  // What the customer receives. The owner fills this in on the Orders tab.
+  deliveryInfo String?
+  deliveredAt  DateTime?
+}
+
+// Simple key/value store for shop settings (name, announcement, support link ...)
+model Setting {
+  key   String @id
+  value String
 }
 
 model Topup {
