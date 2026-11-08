@@ -30,33 +30,31 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4 bg-card border border-border rounded-2xl p-6">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4 card p-6">
       <div>
-        <label className="block text-sm text-muted mb-1">E-mail</label>
+        <label className="label">E-mail</label>
         <input
           type="email"
           required
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full min-h-[44px] px-3 rounded-lg bg-bg border border-border text-white"
+          className="input"
         />
       </div>
       <div>
-        <label className="block text-sm text-muted mb-1">Password</label>
+        <label className="label">Password</label>
         <input
           type="password"
           required
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full min-h-[44px] px-3 rounded-lg bg-bg border border-border text-white"
+          className="input"
         />
       </div>
       {error && <p className="text-sm text-red-400">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full min-h-[48px] rounded-xl bg-accent text-black font-semibold disabled:opacity-60"
-      >
+      <button type="submit" disabled={loading} className="btn-primary w-full min-h-[48px]">
         {loading ? "Logging in…" : "Log in"}
       </button>
     </form>

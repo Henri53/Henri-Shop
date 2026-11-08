@@ -37,18 +37,43 @@ model Product {
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   orders          Order[]
+
+  // Added for the redesign. Both are optional/defaulted, so existing rows stay valid.
+  imageUrl        String?
+  featured        Boolean  @default(false)
+  stockItems      StockItem[]
+}
+
+// One deliverable per row (a key, a code, a login...). When a product has any
+// stock items, every purchase hands the buyer that many unsold rows instantly
+// and Product.stock always equals the number of unsold rows.
+model StockItem {
+  id        String    @id @default(cuid())
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  content   String
+  orderId   String?
+  order     Order?    @relation(fields: [orderId], references: [id])
+  soldAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([productId, orderId])
 }
 
 model Order {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id])
-  qty        Int
-  totalCents Int
-  status     String   @default("PAID")
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  qty          Int
+  totalCents   Int
+  status       String   @default("PAID")
+  createdAt    DateTime @default(now())
+
+  // Manual delivery text the owner writes for products without stock items.
+  deliveryNote String?
+  items        StockItem[]
 }
 
 model Topup {

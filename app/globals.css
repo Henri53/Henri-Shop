@@ -4,9 +4,43 @@
 
 html,
 body {
-  background-color: #0e1116;
+  background-color: #0a0c10;
 }
 
 * {
-  border-color: #232a34;
+  border-color: #222a36;
+}
+
+body {
+  background-image: radial-gradient(900px 420px at 88% -8%, rgba(74, 222, 128, 0.07), transparent 60%),
+    radial-gradient(700px 420px at 0% 0%, rgba(139, 124, 246, 0.07), transparent 55%);
+  background-repeat: no-repeat;
+}
+
+::selection {
+  background: rgba(74, 222, 128, 0.3);
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-border rounded-2xl;
+  }
+  .label {
+    @apply block text-sm text-muted mb-1;
+  }
+  .input {
+    @apply w-full min-h-[44px] px-3 rounded-lg bg-bg border border-border text-white outline-none transition-colors focus:border-accent;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-xl font-semibold bg-accent text-black transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-xl font-semibold border border-border text-white transition hover:border-accent/60 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-xl font-semibold border border-red-500/60 text-red-400 transition hover:bg-red-500/10 disabled:opacity-50;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs border border-border bg-bg/60 text-muted;
+  }
 }

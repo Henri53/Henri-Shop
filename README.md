@@ -6,8 +6,18 @@ A real Next.js app:
   owner. It's not a database account, so nobody can register their way into it.
 - **Customer registration/login** — customers create their own account (hashed password,
   never stored in plain text) and get a balance.
-- **Owner dashboard** at `/owner` — add/edit/delete products with Name, Category, Price,
-  Stock, Origin, Delivery time, Warranty time, descriptions.
+- **Storefront** — category sidebar, search, sorting, a "Featured" row, product cards with
+  stock/delivery/warranty badges, and product pages with a quantity picker.
+- **Owner dashboard** at `/owner` with tabs:
+  - *Overview*: sales, orders, customers, customer balances, low stock, recent orders.
+  - *Products*: add/edit products with image URL, featured flag and visibility; paste a
+    list of keys/codes (one per line) and every buyer receives one instantly.
+  - *Orders*: deliver by hand (for products without a key list) or refund to balance.
+  - *Customers*: see balances and credit/deduct them.
+  - *Top-ups*: pending list with manual confirm/reject, plus history.
+- **Delivery** — buyers see their keys (or your delivery text) with a copy button on
+  `/account`. A product that was ever ordered is hidden instead of deleted, so order
+  history stays intact.
 - **Live exchange rates** — EUR/USD/GBP from the European Central Bank (via
   frankfurter.dev) and BTC/LTC/SOL prices from CoinGecko, both free, no API key.
   Converted prices are display-only ("≈"); payments are always charged in EUR. If the

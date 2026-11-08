@@ -7,8 +7,8 @@ export default function CurrencySwitcher() {
   return (
     <select
       value={currency}
-      onChange={(e) => setCurrency(e.target.value as any)}
-      className="bg-transparent border border-border rounded-lg px-2 py-1 text-sm text-muted"
+      onChange={(e) => setCurrency(e.target.value as "EUR" | "USD" | "GBP")}
+      className="bg-card border border-border rounded-lg px-2 py-1.5 text-sm text-white outline-none focus:border-accent"
       aria-label="Currency"
     >
       <option value="EUR">EUR €</option>
